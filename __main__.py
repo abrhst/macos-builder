@@ -49,7 +49,7 @@ if path.exists(path.join(OUTPUT_DIR)):
         input()
     rmtree(OUTPUT_DIR)
 
-display_stage("Initializing")
+dis_stage("Initializing")
 makedirs(path.join(APP_OUTPUT_DIR, 'Contents', 'Resources'))
 makedirs(path.join(APP_OUTPUT_DIR, 'Contents', 'Frameworks'))
 makedirs(path.join(APP_OUTPUT_DIR, 'Contents', 'MacOS'))
@@ -59,13 +59,13 @@ if not path.isdir(SOURCE_DIR):
 # Download .icns file
 ICON_FILE = path.join(SOURCE_DIR, 'minecraft.icns')
 if not path.exists(ICON_FILE):
-    display_stage("Downloading icons file")
+    dis_stage("Downloading icons file")
     call(['curl', '-sL', '-o', ICON_FILE, 'https://github.com/minecraft-linux/mcpelauncher-ui-qt/raw/0b956a0fc816d900d5b3f2883c6a401330c50fab/Resources/mcpelauncher-icon.icns'])
 copyfile(ICON_FILE, path.join(APP_OUTPUT_DIR, 'Contents', 'Resources', 'minecraft.icns'))
 
 # Download the sources
 def clone_repo(name, url, branch):
-    display_stage("Cloning repository: " + url)
+    dis_stage("Cloning repository: " + url)
     directory = path.join(SOURCE_DIR, name)
     if not path.isdir(directory):
         makedirs(directory)
@@ -79,7 +79,7 @@ def clone_repo(name, url, branch):
         call(['git', 'submodule', 'update', '--init', '--recursive'], cwd=directory)
 
 if not args.skip_sync_sources:
-    display_stage("Downloading sources")
+    dis_stage("Downloading sources")
 
     with open('msa.commit', 'r') as file:
         clone_repo('msa', 'https://github.com/minecraft-linux/msa-manifest.git', file.read().replace('\n', ''))
@@ -104,7 +104,7 @@ if not path.isdir(CMAKE_INSTALL_PREFIX):
     makedirs(CMAKE_INSTALL_PREFIX)
 
 def build_component(name, cmake_opts):
-    display_stage("Building: " + name)
+    dis_stage("Building: " + name)
     source_dir = path.abspath(path.join(SOURCE_DIR, name))
     build_dir = path.join(SOURCE_DIR, "build", name)
     if not path.isdir(build_dir):
@@ -113,7 +113,7 @@ def build_component(name, cmake_opts):
     call(['make', '-j' + str(cpu_count()), 'install'], cwd=build_dir)
 
 def build_component32(name, cmake_opts):
-    display_stage("Building: " + name)
+    dis_stage("Building: " + name)
     source_dir = path.abspath(path.join(SOURCE_DIR, name))
     build_dir = path.join(SOURCE_DIR, "build", name)
     if not path.isdir(build_dir):
@@ -130,7 +130,7 @@ SPARKLE_OPTS = []
 if args.update_sparkle_appcast:
     SPARKLE_OPTS = [ "-DENABLE_SPARKLE_UPDATE_CHECK=1", "-DSPARKLE_UPDATE_CHECK_URL=" + args.update_sparkle_appcast]
 
-display_stage("Building")
+dis_stage("Building")
 OPENSSL64_OPTS = [ '-DOPENSSL_ROOT_DIR=' + path.abspath('ssl64'), '-DOPENSSL_CRYPTO_LIBRARY=' + path.abspath('ssl64/lib/libcrypto.dylib')]
 OPENSSL64_INCLUDES = '-I' + path.abspath('ssl64/include') + ' -L' + path.abspath('ssl64/lib')
 build_component("msa", ['-DENABLE_MSA_QT_UI=ON', '-DMSA_UI_PATH_DEV=OFF', '-DCMAKE_CXX_FLAGS=-DNDEBUG  -Wl,-L' + path.abspath('libcxx-build') + ',-rpath,@loader_path/../Frameworks' +' -D_LIBCPP_DISABLE_AVAILABILITY=1 -I' + path.abspath('libcxx64-build/include/cxx/v1')] + CMAKE_QT_EXTRA_OPTIONS)
@@ -155,7 +155,7 @@ with open('versionsdbremote.txt', 'r') as file:
     ref = file.read().replace('\n', '')
     ADDITIONAL_UI_OPTS += [ "-DLAUNCHER_VERSIONDB_URL=https://raw.githubusercontent.com/minecraft-linux/mcpelauncher-versiondb/" + ref]
 
-build_component("mcpelauncher-ui", ['-DGAME_LAUNCHER_PATH=.', '-DCMAKE_CXX_FLAGS=-DNDEBUG -Wl,-F'+ QT_INSTALL_PATH + '/lib/,-L' + path.abspath('libcxx-build') +',-rpath,@loader_path/../Frameworks -D_LIBCPP_DISABLE_AVAILABILITY=1 -I' + path.abspath('libcxx64-build/include/cxx/v1') + ' ' + OPENSSL64_INCLUDES, "-DQt5QuickCompiler_FOUND=OFF", "-DLAUNCHER_ENABLE_GOOGLE_PLAY_LICENCE_CHECK=ON", "-DLAUNCHER_DISABLE_DEV_MODE=ON"] + VERSION_OPTS + SPARKLE_OPTS + CMAKE_QT_EXTRA_OPTIONS + ADDITIONAL_UI_OPTS + OPENSSL64_OPTS)
+build_component("mcpelauncher-ui", ['-DGAME_LAUNCHER_PATH=.', '-DCMAKE_CXX_FLAGS=-DNDEBUG -Wl,-F'+ QT_INSTALL_PATH + '/lib/,-L' + path.abspath('libcxx-build') +',-rpath,@loader_path/../Frameworks -D_LIBCPP_DISABLE_AVAILABILITY=1 -I' + path.abspath('libcxx64-build/include/cxx/v1') + ' ' + OPENSSL64_INCLUDES, "-DQt5QuickCompiler_FOUND=OFF", "-DLAUNCHER_ENABLE_GOOGLE_PLAY_LICENCE_CHECK=OFF", "-DLAUNCHER_DISABLE_DEV_MODE=ON"] + VERSION_OPTS + SPARKLE_OPTS + CMAKE_QT_EXTRA_OPTIONS + ADDITIONAL_UI_OPTS + OPENSSL64_OPTS)
 
 display_stage("Copying files")
 def copy_installed_files(from_path, to_path):
