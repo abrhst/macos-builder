@@ -1,13 +1,12 @@
-### Can I play with an APK?
+### How to use this?
 
-No, this allowed piracy that is forbidden in this project.
+- Download the latest release from GitHub Releases, and install it.
+- Then, login with Google to use the launcher.
+- Then, you can import an APK freely without a license.
+- Download a APK from any of the sites listed here: [OpenM](https://openm.tech/bedrock/android).
 
-Any attempt to document workarounds or make it easy to import an paid apk without a valid google play game license is undesirable.
+You would need a ARM64 apk for M1+, or a x86_64 APK for Intel Macs.
 
-Game licenses can be revoked at any point of time by you, microsoft/mojang or google, as it happened for all residents of Russia.
-
-Ignoring this policy may cause suspension including termination of this project like happended between 2022-2023.
-
-_Exception to the rule are Minecraft Trial and Edu where the latter doesn't work at this time._
-
-For the most current version of this rule see https://minecraft-linux.github.io/faq/index.html#can-i-play-with-an-apk
+- Go to Settings in the launcher, and then storage, and then import that APK.
+- Wait for it to get imported, then after it is imported, go to the main menu (grass block) and click PLAY.
+- Done.
